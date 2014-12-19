@@ -14,6 +14,7 @@ var flatsheet = new Flatsheet();
 
 /* pull in template for showing info about a location */
 var template = Handlebars.compile(fs.readFileSync('info-template.html'));
+var shunpike = fs.readFileSync('shunpike-details.html');
 
 /* set image path */
 L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
@@ -67,6 +68,27 @@ function addMarker (row) {
   });
 }
 
+
+/* The Shunpike pin */
+
+var marker = L.marker({ lat: '47.600482', lng: '-122.331237' });
+marker.addTo(map);
+
+marker.on('click', function (e) {
+  var modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = shunpike;
+  page.appendChild(modal);
+  
+  var close = document.getElementById('close-modal');
+  eve.on(close, 'click', function (e) {
+    page.removeChild(modal);
+    e.preventDefault();
+  })
+});
+
+
+
 /* create infobox toggle for mobile */
 var infobox = document.getElementById('infobox');
 var toggle = document.getElementById('infobox-toggle');
@@ -83,3 +105,5 @@ eve.on(toggle, 'click', function (e) {
   }
   e.preventDefault();
 });
+
+

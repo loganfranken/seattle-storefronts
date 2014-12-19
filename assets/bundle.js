@@ -15,6 +15,7 @@ var flatsheet = new Flatsheet();
 
 /* pull in template for showing info about a location */
 var template = Handlebars.compile("<section class=\"location-info\">\n  <a id=\"close-modal\" href=\"#\">x</a>\n  <h1 class=\"artist\"><a href=\"{{ url }}\" target=\"_blank\">{{ artist }}</a></h1>\n  <p><b>{{ street }}</b></p>\n  <div class=\"statement\">\n    <a class=\"image\" href=\"{{ url }}\" target=\"_blank\">\n      <img src=\"{{ image }}\">\n    </a>\n    {{{ statement }}}\n  </div>\n  <p><b><a href=\"{{ url }}\" target=\"_blank\">Learn more</a></b></p>\n</section>");
+var shunpike = "<section class=\"location-info\">\n  <a id=\"close-modal\" href=\"#\">x</a>\n  \n  <h1 class=\"artist\">Shunpike</h1>\n  <p>220 2nd Ave S<br>\n     Seattle WA 98104</p>\n  <p><a href=\"http://shunpike.org\">shunpike.org</a><br>\n     206-905-1026<br>\n     <a href=\"mailto:info@shunpike.org\">info@shunpike.org</a></p>\n</section>";
 
 /* set image path */
 L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
@@ -68,6 +69,27 @@ function addMarker (row) {
   });
 }
 
+
+/* The Shunpike pin */
+
+var marker = L.marker({ lat: '47.600482', lng: '-122.331237' });
+marker.addTo(map);
+
+marker.on('click', function (e) {
+  var modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = shunpike;
+  page.appendChild(modal);
+  
+  var close = document.getElementById('close-modal');
+  eve.on(close, 'click', function (e) {
+    page.removeChild(modal);
+    e.preventDefault();
+  })
+});
+
+
+
 /* create infobox toggle for mobile */
 var infobox = document.getElementById('infobox');
 var toggle = document.getElementById('infobox-toggle');
@@ -85,188 +107,11 @@ eve.on(toggle, 'click', function (e) {
   e.preventDefault();
 });
 
-},{"dom-events":6,"element-class":10,"fastclick":11,"flatsheet":12,"fs":2,"handlebars":28,"leaflet":30,"leaflet-providers":29}],2:[function(require,module,exports){
+
+
+},{"dom-events":3,"element-class":7,"fastclick":8,"flatsheet":9,"fs":2,"handlebars":25,"leaflet":27,"leaflet-providers":26}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-// If obj.hasOwnProperty has been overridden, then calling
-// obj.hasOwnProperty(prop) will break.
-// See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-module.exports = function(qs, sep, eq, options) {
-  sep = sep || '&';
-  eq = eq || '=';
-  var obj = {};
-
-  if (typeof qs !== 'string' || qs.length === 0) {
-    return obj;
-  }
-
-  var regexp = /\+/g;
-  qs = qs.split(sep);
-
-  var maxKeys = 1000;
-  if (options && typeof options.maxKeys === 'number') {
-    maxKeys = options.maxKeys;
-  }
-
-  var len = qs.length;
-  // maxKeys <= 0 means that we should not limit keys count
-  if (maxKeys > 0 && len > maxKeys) {
-    len = maxKeys;
-  }
-
-  for (var i = 0; i < len; ++i) {
-    var x = qs[i].replace(regexp, '%20'),
-        idx = x.indexOf(eq),
-        kstr, vstr, k, v;
-
-    if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
-    } else {
-      kstr = x;
-      vstr = '';
-    }
-
-    k = decodeURIComponent(kstr);
-    v = decodeURIComponent(vstr);
-
-    if (!hasOwnProperty(obj, k)) {
-      obj[k] = v;
-    } else if (isArray(obj[k])) {
-      obj[k].push(v);
-    } else {
-      obj[k] = [obj[k], v];
-    }
-  }
-
-  return obj;
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-},{}],4:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var stringifyPrimitive = function(v) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-};
-
-module.exports = function(obj, sep, eq, name) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return map(objectKeys(obj), function(k) {
-      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray(obj[k])) {
-        return obj[k].map(function(v) {
-          return ks + encodeURIComponent(stringifyPrimitive(v));
-        }).join(sep);
-      } else {
-        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-      }
-    }).join(sep);
-
-  }
-
-  if (!name) return '';
-  return encodeURIComponent(stringifyPrimitive(name)) + eq +
-         encodeURIComponent(stringifyPrimitive(obj));
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-function map (xs, f) {
-  if (xs.map) return xs.map(f);
-  var res = [];
-  for (var i = 0; i < xs.length; i++) {
-    res.push(f(xs[i], i));
-  }
-  return res;
-}
-
-var objectKeys = Object.keys || function (obj) {
-  var res = [];
-  for (var key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
-  }
-  return res;
-};
-
-},{}],5:[function(require,module,exports){
-'use strict';
-
-exports.decode = exports.parse = require('./decode');
-exports.encode = exports.stringify = require('./encode');
-
-},{"./decode":3,"./encode":4}],6:[function(require,module,exports){
 
 var synth = require('synthetic-dom-events');
 
@@ -317,7 +162,7 @@ module.exports = {
     emit: emit
 };
 
-},{"synthetic-dom-events":7}],7:[function(require,module,exports){
+},{"synthetic-dom-events":4}],4:[function(require,module,exports){
 
 // for compression
 var win = window;
@@ -438,7 +283,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":8,"./types.json":9}],8:[function(require,module,exports){
+},{"./init.json":5,"./types.json":6}],5:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -505,7 +350,7 @@ module.exports={
   ]
 }
 
-},{}],9:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -550,7 +395,7 @@ module.exports={
   ]
 }
 
-},{}],10:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function(opts) {
   return new ElementClass(opts)
 }
@@ -597,11 +442,11 @@ ElementClass.prototype.has = function(className) {
   return classes.indexOf(className) > -1
 }
 
-},{}],11:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
  *
- * @version 1.0.1
+ * @version 1.0.3
  * @codingstandard ftlabs-jsv2
  * @copyright The Financial Times Limited [All Rights Reserved]
  * @license MIT License (see LICENSE.txt)
@@ -612,7 +457,7 @@ ElementClass.prototype.has = function(className) {
 
 
 /**
- * Instantiate fast-clicking listeners on the specificed layer.
+ * Instantiate fast-clicking listeners on the specified layer.
  *
  * @constructor
  * @param {Element} layer The layer to listen on
@@ -797,6 +642,12 @@ var deviceIsIOS4 = deviceIsIOS && (/OS 4_\d(_\d)?/).test(navigator.userAgent);
  */
 var deviceIsIOSWithBadTarget = deviceIsIOS && (/OS ([6-9]|\d{2})_\d/).test(navigator.userAgent);
 
+/**
+ * BlackBerry requires exceptions.
+ *
+ * @type boolean
+ */
+var deviceIsBlackBerry10 = navigator.userAgent.indexOf('BB10') > 0;
 
 /**
  * Determine whether a given element requires a native click.
@@ -1001,7 +852,10 @@ FastClick.prototype.onTouchStart = function(event) {
 			// with the same identifier as the touch event that previously triggered the click that triggered the alert.
 			// Sadly, there is an issue on iOS 4 that causes some normal touch events to have the same identifier as an
 			// immediately preceeding touch event (issue #52), so this fix is unavailable on that platform.
-			if (touch.identifier === this.lastTouchIdentifier) {
+			// Issue 120: touch.identifier is 0 when Chrome dev tools 'Emulate touch events' is set with an iOS device UA string,
+			// which causes all touch events to be ignored. As this block only applies to iOS, and iOS identifiers are always long,
+			// random integers, it's safe to to continue if the identifier is 0 here.
+			if (touch.identifier && touch.identifier === this.lastTouchIdentifier) {
 				event.preventDefault();
 				return false;
 			}
@@ -1323,6 +1177,7 @@ FastClick.notNeeded = function(layer) {
 	'use strict';
 	var metaViewport;
 	var chromeVersion;
+	var blackberryVersion;
 
 	// Devices that don't support touch don't need FastClick
 	if (typeof window.ontouchstart === 'undefined') {
@@ -1343,7 +1198,7 @@ FastClick.notNeeded = function(layer) {
 					return true;
 				}
 				// Chrome 32 and above with width=device-width or less don't need FastClick
-				if (chromeVersion > 31 && window.innerWidth <= window.screen.width) {
+				if (chromeVersion > 31 && document.documentElement.scrollWidth <= window.outerWidth) {
 					return true;
 				}
 			}
@@ -1351,6 +1206,27 @@ FastClick.notNeeded = function(layer) {
 		// Chrome desktop doesn't need FastClick (issue #15)
 		} else {
 			return true;
+		}
+	}
+
+	if (deviceIsBlackBerry10) {
+		blackberryVersion = navigator.userAgent.match(/Version\/([0-9]*)\.([0-9]*)/);
+
+		// BlackBerry 10.3+ does not require Fastclick library.
+		// https://github.com/ftlabs/fastclick/issues/251
+		if (blackberryVersion[1] >= 10 && blackberryVersion[2] >= 3) {
+			metaViewport = document.querySelector('meta[name=viewport]');
+
+			if (metaViewport) {
+				// user-scalable=no eliminates click delay.
+				if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
+					return true;
+				}
+				// width=device-width (or less than device-width) eliminates click delay.
+				if (document.documentElement.scrollWidth <= window.outerWidth) {
+					return true;
+				}
+			}
 		}
 	}
 
@@ -1375,7 +1251,7 @@ FastClick.attach = function(layer, options) {
 };
 
 
-if (typeof define !== 'undefined' && define.amd) {
+if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
 
 	// AMD. Register as an anonymous module.
 	define(function() {
@@ -1389,8 +1265,7 @@ if (typeof define !== 'undefined' && define.amd) {
 	window.FastClick = FastClick;
 }
 
-},{}],12:[function(require,module,exports){
-var qs = require('querystring');
+},{}],9:[function(require,module,exports){
 var request = require('request');
 
 module.exports = Flatsheet;
@@ -1414,8 +1289,9 @@ Flatsheet.prototype.sheet = function sheet (id, cb) {
 
 Flatsheet.prototype.get = function get (path, params, cb) {
   var opts = {
-    uri: this.fullUrl(path, params), 
+    uri: this.fullUrl(path, params),
     headers: { 'Authorization': 'Token token=' + this.token }, 
+    qs: params,
     json: true
   };
 
@@ -1430,14 +1306,9 @@ Flatsheet.prototype.get = function get (path, params, cb) {
 };
 
 Flatsheet.prototype.fullUrl = function fullUrl (path, params) {
-  var q = query(params);
-  return this.host + '/api' + this.apiVersion + path + '/' + q;
+  return this.host + '/api' + this.apiVersion + path + '/';
 };
-
-function query (options) {
-  return '?' + qs.stringify(options);
-}
-},{"querystring":5,"request":13}],13:[function(require,module,exports){
+},{"request":10}],10:[function(require,module,exports){
 // Browser Request
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1452,10 +1323,25 @@ function query (options) {
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// UMD HEADER START 
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like enviroments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.returnExports = factory();
+  }
+}(this, function () {
+// UMD HEADER END
+
 var XHR = XMLHttpRequest
 if (!XHR) throw new Error('missing XMLHttpRequest')
-
-module.exports = request
 request.log = {
   'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
 }
@@ -1520,6 +1406,70 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
+  
+  //BEGIN QS Hack
+  var serialize = function(obj) {
+    var str = [];
+    for(var p in obj)
+      if (obj.hasOwnProperty(p)) {
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+      }
+    return str.join("&");
+  }
+  
+  if(options.qs){
+    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
+    if(options.uri.indexOf('?') !== -1){ //no get params
+        options.uri = options.uri+'&'+qs;
+    }else{ //existing get params
+        options.uri = options.uri+'?'+qs;
+    }
+  }
+  //END QS Hack
+  
+  //BEGIN FORM Hack
+  var multipart = function(obj) {
+    //todo: support file type (useful?)
+    var result = {};
+    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000);
+    var lines = [];
+    for(var p in obj){
+        if (obj.hasOwnProperty(p)) {
+            lines.push(
+                '--'+result.boundry+"\n"+
+                'Content-Disposition: form-data; name="'+p+'"'+"\n"+
+                "\n"+
+                obj[p]+"\n"
+            );
+        }
+    }
+    lines.push( '--'+result.boundry+'--' );
+    result.body = lines.join('');
+    result.length = result.body.length;
+    result.type = 'multipart/form-data; boundary='+result.boundry;
+    return result;
+  }
+  
+  if(options.form){
+    if(typeof options.form == 'string') throw('form name unsupported');
+    if(options.method === 'POST'){
+        var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
+        options.headers['content-type'] = encoding;
+        switch(encoding){
+            case 'application/x-www-form-urlencoded':
+                options.body = serialize(options.form).replace(/%20/g, "+");
+                break;
+            case 'multipart/form-data':
+                var multi = multipart(options.form);
+                //options.headers['content-length'] = multi.length;
+                options.body = multi.body;
+                options.headers['content-type'] = multi.type;
+                break;
+            default : throw new Error('unsupported encoding:'+encoding);
+        }
+    }
+  }
+  //END FORM Hack
 
   // If onResponse is boolean true, call back immediately when the response is known,
   // not when the full request is complete.
@@ -1849,8 +1799,12 @@ function b64_enc (data) {
 
     return enc;
 }
+    return request;
+//UMD FOOTER START
+}));
+//UMD FOOTER END
 
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -1888,7 +1842,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":15,"./handlebars/compiler/ast":17,"./handlebars/compiler/base":18,"./handlebars/compiler/compiler":19,"./handlebars/compiler/javascript-compiler":20}],15:[function(require,module,exports){
+},{"./handlebars.runtime":12,"./handlebars/compiler/ast":14,"./handlebars/compiler/base":15,"./handlebars/compiler/compiler":16,"./handlebars/compiler/javascript-compiler":17}],12:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -1921,7 +1875,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":16,"./handlebars/exception":24,"./handlebars/runtime":25,"./handlebars/safe-string":26,"./handlebars/utils":27}],16:[function(require,module,exports){
+},{"./handlebars/base":13,"./handlebars/exception":21,"./handlebars/runtime":22,"./handlebars/safe-string":23,"./handlebars/utils":24}],13:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -2102,7 +2056,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":24,"./utils":27}],17:[function(require,module,exports){
+},{"./exception":21,"./utils":24}],14:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -2330,7 +2284,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":24}],18:[function(require,module,exports){
+},{"../exception":21}],15:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -2346,7 +2300,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":17,"./parser":21}],19:[function(require,module,exports){
+},{"./ast":14,"./parser":18}],16:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -2816,7 +2770,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":24}],20:[function(require,module,exports){
+},{"../exception":21}],17:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -3759,7 +3713,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":16,"../exception":24}],21:[function(require,module,exports){
+},{"../base":13,"../exception":21}],18:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -4250,7 +4204,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],22:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -4389,7 +4343,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":23}],23:[function(require,module,exports){
+},{"./visitor":20}],20:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -4402,7 +4356,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],24:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -4431,7 +4385,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],25:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -4569,7 +4523,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":16,"./exception":24,"./utils":27}],26:[function(require,module,exports){
+},{"./base":13,"./exception":21,"./utils":24}],23:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -4581,7 +4535,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],27:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -4658,7 +4612,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":26}],28:[function(require,module,exports){
+},{"./safe-string":23}],25:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -4685,7 +4639,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":14,"../dist/cjs/handlebars/compiler/printer":22,"../dist/cjs/handlebars/compiler/visitor":23,"fs":2}],29:[function(require,module,exports){
+},{"../dist/cjs/handlebars":11,"../dist/cjs/handlebars/compiler/printer":19,"../dist/cjs/handlebars/compiler/visitor":20,"fs":2}],26:[function(require,module,exports){
 (function () {
 	'use strict';
 
@@ -4710,12 +4664,20 @@ if (typeof require !== 'undefined' && require.extensions) {
 			// overwrite values in provider from variant.
 			if (variantName && 'variants' in providers[providerName]) {
 				if (!(variantName in providers[providerName].variants)) {
-					throw 'No such name in provider (' + variantName + ')';
+					throw 'No such variant of ' + providerName + ' (' + variantName + ')';
 				}
 				var variant = providers[providerName].variants[variantName];
+				var variantOptions;
+				if (typeof variant === 'string') {
+					variantOptions = {
+						variant: variant
+					};
+				} else {
+					variantOptions = variant.options;
+				}
 				provider = {
 					url: variant.url || provider.url,
-					options: L.Util.extend({}, provider.options, variant.options)
+					options: L.Util.extend({}, provider.options, variantOptions)
 				};
 			} else if (typeof provider.url === 'function') {
 				provider.url = provider.url(parts.splice(1, parts.length - 1).join('.'));
@@ -4752,13 +4714,12 @@ if (typeof require !== 'undefined' && require.extensions) {
 			url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			options: {
 				attribution:
-					'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-					'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+					'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 			},
 			variants: {
 				Mapnik: {},
 				BlackAndWhite: {
-					url: 'http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
+					url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'
 				},
 				DE: {
 					url: 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'
@@ -4771,13 +4732,6 @@ if (typeof require !== 'undefined' && require.extensions) {
 				}
 			}
 		},
-		OpenCycleMap: {
-			url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
-			options: {
-				attribution:
-					'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, {attribution.OpenStreetMap}'
-			}
-		},
 		OpenSeaMap: {
 			url: 'http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
 			options: {
@@ -4785,36 +4739,55 @@ if (typeof require !== 'undefined' && require.extensions) {
 			}
 		},
 		Thunderforest: {
-			url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png',
+			url: 'http://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png',
 			options: {
-				attribution: '{attribution.OpenCycleMap}'
+				attribution:
+					'&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, {attribution.OpenStreetMap}',
+				variant: 'cycle'
 			},
 			variants: {
-				OpenCycleMap: {},
-				Transport: {
-					url: 'http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png'
-				},
-				Landscape: {
-					url: 'http://{s}.tile3.opencyclemap.org/landscape/{z}/{x}/{y}.png'
-				},
-				Outdoors: {
-					url: 'http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'
-				}
+				OpenCycleMap: 'cycle',
+				Transport: 'transport',
+				Landscape: 'landscape',
+				Outdoors: 'outdoors'
 			}
 		},
 		OpenMapSurfer: {
-			url: 'http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}',
+			url: 'http://openmapsurfer.uni-hd.de/tiles/{variant}/x={x}&y={y}&z={z}',
 			options: {
+				minZoom: 0,
+				maxZoom: 20,
+				variant: 'roads',
 				attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data {attribution.OpenStreetMap}'
 			},
 			variants: {
-				Roads: {},
+				Roads: 'roads',
 				AdminBounds: {
-					url: 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}'
+					options: {
+						variant: 'adminb',
+						maxZoom: 19
+					}
 				},
 				Grayscale: {
-					url: 'http://openmapsurfer.uni-hd.de/tiles/roadsg/x={x}&y={y}&z={z}'
+					options: {
+						variant: 'roadsg',
+						maxZoom: 19
+					}
 				}
+			}
+		},
+		Hydda: {
+			url: 'http://{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
+			options: {
+				minZoom: 0,
+				maxZoom: 18,
+				variant: 'full',
+				attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data {attribution.OpenStreetMap}'
+			},
+			variants: {
+				Full: 'full',
+				Base: 'base',
+				RoadsAndLabels: 'roads_and_labels',
 			}
 		},
 		MapQuestOpen: {
@@ -4849,7 +4822,7 @@ if (typeof require !== 'undefined' && require.extensions) {
 			}
 		},
 		Stamen: {
-			url: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',
+			url: 'http://{s}.tile.stamen.com/{variant}/{z}/{x}/{y}.png',
 			options: {
 				attribution:
 					'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
@@ -4857,51 +4830,43 @@ if (typeof require !== 'undefined' && require.extensions) {
 					'Map data {attribution.OpenStreetMap}',
 				subdomains: 'abcd',
 				minZoom: 0,
-				maxZoom: 20
+				maxZoom: 20,
+				variant: 'toner'
 			},
 			variants: {
-				Toner: {},
-				TonerBackground: {
-					url: 'http://{s}.tile.stamen.com/toner-background/{z}/{x}/{y}.png'
-				},
-				TonerHybrid: {
-					url: 'http://{s}.tile.stamen.com/toner-hybrid/{z}/{x}/{y}.png'
-				},
-				TonerLines: {
-					url: 'http://{s}.tile.stamen.com/toner-lines/{z}/{x}/{y}.png'
-				},
-				TonerLabels: {
-					url: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png'
-				},
-				TonerLite: {
-					url: 'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png'
-				},
+				Toner: 'toner',
+				TonerBackground: 'toner-background',
+				TonerHybrid: 'toner-hybrid',
+				TonerLines: 'toner-lines',
+				TonerLabels: 'toner-labels',
+				TonerLite: 'toner-lite',
 				Terrain: {
-					url: 'http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.jpg',
 					options: {
+						variant: 'terrain',
 						minZoom: 4,
 						maxZoom: 18
 					}
 				},
 				TerrainBackground: {
-					url: 'http://{s}.tile.stamen.com/terrain-background/{z}/{x}/{y}.jpg',
 					options: {
+						variant: 'terrain-background',
 						minZoom: 4,
 						maxZoom: 18
 					}
 				},
 				Watercolor: {
-					url: 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',
 					options: {
-						minZoom: 3,
+						variant: 'watercolor',
+						minZoom: 1,
 						maxZoom: 16
 					}
 				}
 			}
 		},
 		Esri: {
-			url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+			url: 'http://server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
 			options: {
+				variant: 'World_Street_Map',
 				attribution: 'Tiles &copy; Esri'
 			},
 			variants: {
@@ -4913,32 +4878,32 @@ if (typeof require !== 'undefined' && require.extensions) {
 					}
 				},
 				DeLorme: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'Specialty/DeLorme_World_Base_Map',
 						minZoom: 1,
 						maxZoom: 11,
 						attribution: '{attribution.Esri} &mdash; Copyright: &copy;2012 DeLorme'
 					}
 				},
 				WorldTopoMap: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'World_Topo_Map',
 						attribution:
 							'{attribution.Esri} &mdash; ' +
 							'Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
 					}
 				},
 				WorldImagery: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'World_Imagery',
 						attribution:
 							'{attribution.Esri} &mdash; ' +
 							'Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 					}
 				},
 				WorldTerrain: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'World_Terrain_Base',
 						maxZoom: 13,
 						attribution:
 							'{attribution.Esri} &mdash; ' +
@@ -4946,36 +4911,36 @@ if (typeof require !== 'undefined' && require.extensions) {
 					}
 				},
 				WorldShadedRelief: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'World_Shaded_Relief',
 						maxZoom: 13,
 						attribution: '{attribution.Esri} &mdash; Source: Esri'
 					}
 				},
 				WorldPhysical: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'World_Physical_Map',
 						maxZoom: 8,
 						attribution: '{attribution.Esri} &mdash; Source: US National Park Service'
 					}
 				},
 				OceanBasemap: {
-					url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'Ocean_Basemap',
 						maxZoom: 13,
 						attribution: '{attribution.Esri} &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
 					}
 				},
 				NatGeoWorldMap: {
-					url: 'http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'NatGeo_World_Map',
 						maxZoom: 16,
 						attribution: '{attribution.Esri} &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
 					}
 				},
 				WorldGrayCanvas: {
-					url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
 					options: {
+						variant: 'Canvas/World_Light_Gray_Base',
 						maxZoom: 16,
 						attribution: '{attribution.Esri} &mdash; Esri, DeLorme, NAVTEQ'
 					}
@@ -4983,122 +4948,150 @@ if (typeof require !== 'undefined' && require.extensions) {
 			}
 		},
 		OpenWeatherMap: {
+			url: 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png',
 			options: {
 				attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
 				opacity: 0.5
 			},
 			variants: {
-				Clouds: {
-					url: 'http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png'
-				},
-				CloudsClassic: {
-					url: 'http://{s}.tile.openweathermap.org/map/clouds_cls/{z}/{x}/{y}.png'
-				},
-				Precipitation: {
-					url: 'http://{s}.tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png'
-				},
-				PrecipitationClassic: {
-					url: 'http://{s}.tile.openweathermap.org/map/precipitation_cls/{z}/{x}/{y}.png'
-				},
-				Rain: {
-					url: 'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png'
-				},
-				RainClassic: {
-					url: 'http://{s}.tile.openweathermap.org/map/rain_cls/{z}/{x}/{y}.png'
-				},
-				Pressure: {
-					url: 'http://{s}.tile.openweathermap.org/map/pressure/{z}/{x}/{y}.png'
-				},
-				PressureContour: {
-					url: 'http://{s}.tile.openweathermap.org/map/pressure_cntr/{z}/{x}/{y}.png'
-				},
-				Wind: {
-					url: 'http://{s}.tile.openweathermap.org/map/wind/{z}/{x}/{y}.png'
-				},
-				Temperature: {
-					url: 'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png'
-				},
-				Snow: {
-					url: 'http://{s}.tile.openweathermap.org/map/snow/{z}/{x}/{y}.png'
-				}
+				Clouds: 'clouds',
+				CloudsClassic: 'clouds_cls',
+				Precipitation: 'precipitation',
+				PrecipitationClassic: 'precipitation_cls',
+				Rain: 'rain',
+				RainClassic: 'rain_cls',
+				Pressure: 'pressure',
+				PressureContour: 'pressure_cntr',
+				Wind: 'wind',
+				Temperature: 'temp',
+				Snow: 'snow'
 			}
 		},
-		Nokia: {
+		HERE: {
+			/*
+			 * HERE maps, formerly Nokia maps.
+			 * These basemaps are free, but you need an API key. Please sign up at
+			 * http://developer.here.com/getting-started
+			 *
+			 * Note that the base urls contain '.cit' whichs is HERE's
+			 * 'Customer Integration Testing' environment. Please remove for production
+			 * envirionments.
+			 */
+			url:
+				'http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/' +
+				'maptile/{mapID}/{variant}/{z}/{x}/{y}/256/png8?' +
+				'app_id={app_id}&app_code={app_code}',
 			options: {
 				attribution:
-					'Map &copy; <a href="http://developer.here.com">Nokia</a>, Data &copy; NAVTEQ 2012',
+					'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
 				subdomains: '1234',
-				devID: 'xyz', //These basemaps are free and you can sign up here:  http://developer.here.com/plans
-				appID: 'abc'
+				mapID: 'newest',
+				'app_id': '<insert your app_id here>',
+				'app_code': '<insert your app_code here>',
+				base: 'base',
+				variant: 'normal.day',
+				minZoom: 0,
+				maxZoom: 20
 			},
 			variants: {
-				normalDay: {
-					url: 'http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}'
+				normalDay: 'normal.day',
+				normalDayCustom: 'normal.day.custom',
+				normalDayGrey: 'normal.day.grey',
+				normalDayMobile: 'normal.day.mobile',
+				normalDayGreyMobile: 'normal.day.grey.mobile',
+				normalDayTransit: 'normal.day.transit',
+				normalDayTransitMobile: 'normal.day.transit.mobile',
+				normalNight: 'normal.night',
+				normalNightMobile: 'normal.night.mobile',
+				normalNightGrey: 'normal.night.grey',
+				normalNightGreyMobile: 'normal.night.grey.mobile',
+
+				carnavDayGrey: 'carnav.day.grey',
+				hybridDay: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.day'
+					}
 				},
-				normalGreyDay: {
-					url: 'http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/normal.day.grey/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}'
+				hybridDayMobile: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.day.mobile'
+					}
 				},
-				satelliteNoLabelsDay: {
-					url: 'http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}'
-				},
-				satelliteYesLabelsDay: {
-					url: 'http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}'
+				pedestrianDay: 'pedestrian.day',
+				pedestrianNight: 'pedestrian.night',
+				satelliteDay: {
+					options: {
+						base: 'aerial',
+						variant: 'satellite.day'
+					}
 				},
 				terrainDay: {
-					url: 'http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}'
+					options: {
+						base: 'aerial',
+						variant: 'terrain.day'
+					}
+				},
+				terrainDayMobile: {
+					options: {
+						base: 'aerial',
+						variant: 'terrain.day.mobile'
+					}
 				}
 			}
 		},
 		Acetate: {
-			url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-hillshading/{z}/{x}/{y}.png',
+			url: 'http://a{s}.acetate.geoiq.com/tiles/{variant}/{z}/{x}/{y}.png',
 			options: {
 				attribution:
 					'&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
 				subdomains: '0123',
 				minZoom: 2,
-				maxZoom: 18
+				maxZoom: 18,
+				variant: 'acetate-base'
 			},
 			variants: {
-				all: {},
-				basemap: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-base/{z}/{x}/{y}.png'
-				},
-				terrain: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/terrain/{z}/{x}/{y}.png'
-				},
-				foreground: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-fg/{z}/{x}/{y}.png'
-				},
-				roads: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-roads/{z}/{x}/{y}.png'
-				},
-				labels: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-labels/{z}/{x}/{y}.png'
-				},
-				hillshading: {
-					url: 'http://a{s}.acetate.geoiq.com/tiles/hillshading/{z}/{x}/{y}.png'
-				}
+				basemap: 'acetate-base',
+				terrain: 'terrain',
+				all: 'acetate-hillshading',
+				foreground: 'acetate-fg',
+				roads: 'acetate-roads',
+				labels: 'acetate-labels',
+				hillshading: 'hillshading'
 			}
 		},
-		CloudMade: {
-			url: 'http://{s}.tile.cloudmade.com/{apiKey}/{styleID}/256/{z}/{x}/{y}.png',
+		FreeMapSK: {
+			url: 'http://{s}.freemap.sk/T/{z}/{x}/{y}.jpeg',
+			options: {
+				minZoom: 8,
+				maxZoom: 16,
+				subdomains: ['t1', 't2', 't3', 't4'],
+				attribution:
+					'{attribution.OpenStreetMap}, vizualization CC-By-SA 2.0 <a href="http://freemap.sk">Freemap.sk</a>'
+			}
+		},
+		MtbMap: {
+			url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
 			options: {
 				attribution:
-					'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-					'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-					'Map tile imagery © <a href="http://cloudmade.com">CloudMade</a>',
+					'{attribution.OpenStreetMap} &amp; USGS'
+			}
+		},
+		CartoDB: {
+			url: 'http://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}.png',
+			options: {
+				attribution: '{attribution.OpenStreetMap} &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+				subdomains: 'abcd',
 				minZoom: 0,
-				apiKey: 'abc', // Sign up for an API key at http://cloudmade.com/ - first 500,000 tile requests are free
-				styleID: '1'
+				maxZoom: 18,
+				variant: 'light_all'
 			},
 			variants: {
-				standardResolution: {
-					maxZoom: 18
-				},
-				highResolution: {
-					url: 'http://{s}.tile.cloudmade.com/{apiKey}/{styleID}@2x/256/{z}/{x}/{y}.png',
-					maxZoom: 19
-				}
+				Positron: 'light_all',
+				PositronNoLabels: 'light_nolabels',
+				DarkMatter: 'dark_all',
+				DarkMatterNoLabels: 'dark_nolabels'
 			}
 		}
 	};
@@ -5106,67 +5099,9 @@ if (typeof require !== 'undefined' && require.extensions) {
 	L.tileLayer.provider = function (provider, options) {
 		return new L.TileLayer.Provider(provider, options);
 	};
-
-	L.Control.Layers.Provided = L.Control.Layers.extend({
-		initialize: function (base, overlay, options) {
-			var first;
-
-			var labelFormatter = function (label) {
-				return label.replace(/\./g, ': ').replace(/([a-z])([A-Z])/g, '$1 $2');
-			};
-
-			if (base.length) {
-				(function () {
-					var out = {},
-					    len = base.length,
-					    i = 0;
-
-					while (i < len) {
-						if (typeof base[i] === 'string') {
-							if (i === 0) {
-								first = L.tileLayer.provider(base[0]);
-								out[labelFormatter(base[i])] = first;
-							} else {
-								out[labelFormatter(base[i])] = L.tileLayer.provider(base[i]);
-							}
-						}
-						i++;
-					}
-					base = out;
-				}());
-				this._first = first;
-			}
-
-			if (overlay && overlay.length) {
-				(function () {
-					var out = {},
-					    len = overlay.length,
-					    i = 0;
-
-					while (i < len) {
-						if (typeof overlay[i] === 'string') {
-							out[labelFormatter(overlay[i])] = L.tileLayer.provider(overlay[i]);
-						}
-						i++;
-					}
-					overlay = out;
-				}());
-			}
-			L.Control.Layers.prototype.initialize.call(this, base, overlay, options);
-		},
-		onAdd: function (map) {
-			this._first.addTo(map);
-			return L.Control.Layers.prototype.onAdd.call(this, map);
-		}
-	});
-
-	L.control.layers.provided = function (baseLayers, overlays, options) {
-		return new L.Control.Layers.Provided(baseLayers, overlays, options);
-	};
 }());
 
-
-},{}],30:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*
  Leaflet, a JavaScript library for mobile-friendly interactive maps. http://leafletjs.com
  (c) 2010-2013, Vladimir Agafonkin
