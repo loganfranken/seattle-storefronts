@@ -1,6 +1,7 @@
 var L = window.L
 var fs = require('fs')
 var Handlebars = require('handlebars')
+var elClass = require('element-class')
 var eve = require('dom-events')
 require('fastclick')(document.body)
 
@@ -12,6 +13,7 @@ var mapboxTiles = L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/
 
 var infoEl = document.getElementById('info')
 var infoBoxEl = document.getElementById('infobox')
+var toggle = document.getElementById('infobox-toggle')
 var mapEl = document.getElementById('map')
 var pageEl = document.getElementById('page')
 
@@ -83,6 +85,20 @@ function createGeoJSON (locations) {
 
   return geojson
 }
+
+/* create infobox toggle for mobile */
+eve.on(toggle, 'click', function (e) {
+  if (elClass(toggle).has('active')) {
+    elClass(toggle).remove('active')
+    elClass(infobox).remove('active')
+    toggle.innerHTML = '+ open'
+  } else {
+    elClass(toggle).add('active')
+    elClass(infobox).add('active')
+    toggle.innerHTML = 'x close'
+  }
+  e.preventDefault()
+})
 
 function resizeMap () {
   if (window.innerWidth >= 700) {

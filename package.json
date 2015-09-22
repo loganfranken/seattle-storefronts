@@ -19,18 +19,13 @@
     "element-class": "^0.1.1",
     "fastclick": "^1.0.1",
     "handlebars": "~1.3.0",
-    "leaflet": "^0.7.3",
-    "leaflet-providers": "^1.0.3",
     "mapbox.js": "^2.2.2",
-    "normalize-css": "git://github.com/sethvincent/normalize-css",
-    "normalize.css": "^3.0.3",
-    "skelestyle-typography": "0.0.4"
+    "normalize.css": "^3.0.3"
   },
   "devDependencies": {
     "brfs": "0.0.9",
     "browserify": "~3.24.13",
     "budo": "^4.2.2",
-    "gazer": "0.0.3",
     "myth": "~0.3.0",
     "rework-npm-cli": "0.0.1"
   }
