@@ -1,20 +1,39 @@
-@import "normalize-css";
-@import "skelestyle-typography";
-
-body,
-html {
+html,
+body {
+  font: 18px/1.5 'Source Sans Pro', 'Helvetica Neue', Helvetica, arial, sans-serif;
+  color: #444;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  font-weight: 300;
+  width: 100%;
   height: 100%;
+  margin: 0px;
+  padding: 0px;
+  background-color: #f8f8f6;
+  overflow: hidden;
 }
 
 .site-logo {
-  float: left;
   width: 50px;
   margin-right: 10px;
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .site-title {
   font-weight: 300;
   font-size: 20px;
+  margin: 0px;
+  display: inline-block;
+}
+
+a {
+  color: rgb(60, 103, 137);
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  
 }
 
 #page {
@@ -70,19 +89,17 @@ html {
   font-size: 80%;
 }
 
-
-
 #infobox.active {
   display: block;
 }
 
-
 .modal {
   position: fixed;
-  top: 99px;
-  padding: 10px;
+  top: 130px;
+  margin: 0px 10px;
+  padding: 10px 10px 50px 10px;
   background-color: #fff;
-  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 #close-modal {
@@ -111,46 +128,38 @@ html {
   height: auto;
 }
 
-/* leaflet overrides */
-
-.leaflet-popup-scrolled {
-  overflow: auto;
-  border: 0px;
-  margin: 10px;
-  padding: 20px;
+h1.artist {
+  margin: 0px;
 }
 
-.leaflet-popup-content-wrapper {
-  border-radius: 3px;
-  position: fixed;
+p.street {
+  
 }
 
-.leaflet-container a.leaflet-popup-close-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  padding: 4px 4px 0 0;
-  text-align: center;
-  width: 18px;
-  height: 14px;
-  font: 18px/16px Tahoma, Verdana, sans-serif;
-  text-decoration: none;
-  font-weight: 300;
-  background: transparent;
+p.title {
+  font-weight: 500;
+  font-style: italic;
 }
+
+.location-info p {
+  margin-top: 0px;
+}
+
 
 /* media queries */
 
 @media only screen and (min-width: 700px) {
   .site-logo {
-    float: none;
     width: 200px;
     margin-right: 10px;
   }
 
-  .map-container {
-    width: 80%;
+  .site-title {
+    display: block;
+    margin-top: 10px;
   }
+
+  .map-container {}
 
   #info {
     border-right: 1px solid #dbdbdb;
@@ -169,11 +178,9 @@ html {
   }
 
   .modal {
-    top: 20px;
-    left: 320px;
-    background-color: #fff;
-    background-color: rgba(255, 255, 255, 0.9);
-    margin-right: 20px;
+    top: 50px;
+    left: 350px;
+    margin-right: 50px;
   }
 
   .location-info {

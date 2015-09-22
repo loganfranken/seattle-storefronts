@@ -1,3 +1,2 @@
-# walkabout prototype
+# [artmap.shunpike.org](http://artmap.shunpike.org)
 
-### Don't edit anything in the assets folder

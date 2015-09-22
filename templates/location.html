@@ -1,12 +1,14 @@
 <section class="location-info">
   <a id="close-modal" href="#">x</a>
   <h1 class="artist"><a href="{{ url }}" target="_blank">{{ artist }}</a></h1>
-  <p><b>{{ street }}</b></p>
+  <p class="street">{{ street }}</p>
   <div class="statement">
     <a class="image" href="{{ url }}" target="_blank">
       <img src="{{ image }}">
     </a>
-    {{{ statement }}}
+    <p class="title">{{ title }}</p>
+    <p class="statement">{{{ statement }}}</p>
+    <p class="bio"><i>{{{ bio }}}</i></p>
   </div>
   <p><b><a href="{{ url }}" target="_blank">Learn more</a></b></p>
 </section>
