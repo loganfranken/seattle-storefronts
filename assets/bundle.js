@@ -2,7 +2,9 @@
 var L = window.L
 var fs = require('fs')
 var Handlebars = require('handlebars')
+var elClass = require('element-class')
 var eve = require('dom-events')
+var request = require('xhr')
 require('fastclick')(document.body)
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoic2V0aHZpbmNlbnQiLCJhIjoiSXZZXzZnUSJ9.Nr_zKa-4Ztcmc1Ypl0k5nw'
@@ -13,6 +15,7 @@ var mapboxTiles = L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/
 
 var infoEl = document.getElementById('info')
 var infoBoxEl = document.getElementById('infobox')
+var toggle = document.getElementById('infobox-toggle')
 var mapEl = document.getElementById('map')
 var pageEl = document.getElementById('page')
 
@@ -23,18 +26,21 @@ var templates = {
   shunpike: "<section class=\"location-info\">\n  <a id=\"close-modal\" href=\"#\">x</a>\n  \n  <h1 class=\"artist\">Shunpike</h1>\n  <p>220 2nd Ave S<br>\n     Seattle WA 98104</p>\n  <p><a href=\"http://shunpike.org\">shunpike.org</a><br>\n     206-905-1026<br>\n     <a href=\"mailto:info@shunpike.org\">info@shunpike.org</a></p>\n</section>"
 }
 
-var infodata = require('./info.json')[0]
-infoBoxEl.innerHTML = templates.info(infodata)
+request('/info.json', function (err, res, body) {
+  infoBoxEl.innerHTML = templates.info(JSON.parse(body)[0])
+})
 
 var map = window.map = L.map(mapEl)
 map.addLayer(mapboxTiles)
 map.setView([47.6224, -122.337], 16)
 if (window.innerWidth >= 700) resizeMap()
 
-var locations = require('./locations.json')
-var geojson = createGeoJSON(locations)
 var markerLayer = L.mapbox.featureLayer().addTo(map)
-markerLayer.setGeoJSON(geojson)
+
+request('/locations.json', function (err, res, body) {
+  var geojson = createGeoJSON(JSON.parse(body))
+  markerLayer.setGeoJSON(geojson)
+})
 
 markerLayer.on('click', function (e) {
   var item = e.layer.feature.properties
@@ -85,6 +91,20 @@ function createGeoJSON (locations) {
   return geojson
 }
 
+/* create infobox toggle for mobile */
+eve.on(toggle, 'click', function (e) {
+  if (elClass(toggle).has('active')) {
+    elClass(toggle).remove('active')
+    elClass(infobox).remove('active')
+    toggle.innerHTML = '+ open'
+  } else {
+    elClass(toggle).add('active')
+    elClass(infobox).add('active')
+    toggle.innerHTML = 'x close'
+  }
+  e.preventDefault()
+})
+
 function resizeMap () {
   if (window.innerWidth >= 700) {
     mapEl.style.width = (window.innerWidth - infoEl.offsetWidth) + 'px'
@@ -98,109 +118,9 @@ function resizeMap () {
 
 window.onresize = resizeMap
 
-},{"./info.json":2,"./locations.json":3,"dom-events":5,"fastclick":9,"fs":4,"handlebars":24}],2:[function(require,module,exports){
-module.exports=[{
-  "link": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-  "date": "Through July 20, 2015.",
-  "description": "Storefronts and Shunpike are proud to present eight new Washington State artists in South Lake Union, exploring subjects including interactive color field “paintings,” musings on the artifice of NASA photography, the geometry of pool, and the weight of shadow.",
-  "artwalk": "May 7, 6-7 pm",
-  "artwalk_description": "Join our new Storefronts Installation Coordinator Morgan Cahn and the artists for a free guided art walk of the latest Storefronts installations in South Lake Union. Learn more about all 8 Storefronts currently in South Lake Union. The walk kicks off at the corner of Mercer and Terry streets at 6pm sharp. Wear your walking shoes! No need to register. Just show up!"
-}]
+},{"dom-events":3,"element-class":7,"fastclick":8,"fs":2,"handlebars":23,"xhr":24}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
-module.exports=[
-  {
-    "street": "John St, west of Boren Ave N",
-    "artist": "Diana Surma, Judd Cohen and Erik Rosenbladt",
-    "title": "ColorBox",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/01_cohen_judd_colorbox_render.jpg?w=650&h=366",
-    "url": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-    "statement": "ColorBox is a project that challenges the typical relationship between viewer and artwork by inviting interaction between the audience and surrounding environment. The sculpture aims to encourage curiosity and direct, tangible engagement with passerby. It’s essential purpose is to evoke speculation and wonder in regards to the origin of its dynamic, ever changing grid of color.",
-    "bio": "Diana Leigh Surma is an abstract painter influenced by color theory, pattern and color field painting. Judd Cohen is a sculptor, programmer and game designer. Erik Rosenbladt is a tinkerer, collector and electronics guru. We are a Tacoma-based artist team interested in combining fine art techniques with digital media to produce interactive 3-D installations. Through collaboration, we aim to promote a more widespread integration of arts and technology.",
-    "latitude": "47.61982",
-    "longitude": "-122.33607"
-  },
-  {
-    "street": "Mercer St, west of Terry Ave N",
-    "artist": "Rachel Dorn",
-    "title": "Kekino Bionica",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/dornimg_6419.jpeg",
-    "url": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-    "statement": "Rachel Dorn creates ceramic sculptures that are a surreal interpretation of the biological world, featuring abstract forms inspired by exotic and local plants, including seed pods, bulbs and flowers, as well as aquatic creatures. In her most recent work, mechanical parts are integrated into the sculptures as prosthetic supports and enhancements for the organic forms both familiar and strange.",
-    "bio": "Rachel Dorn is a ceramic sculptor and art instructor based in Yakima, WA, where she teaches clay and studio art classes at Yakima Valley Community College.",
-    "latitude": "47.624417533364316",
-    "longitude": "-122.33765602111816"
-  },
-  {
-    "street": "Mercer St, west of Terry Ave N",
-    "artist": "Dakota Gearhart",
-    "title": "Imaging Andromeda",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/gearhart_d_02-copy.jpg?w=650&h=433",
-    "url": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-    "statement": "<p>Dakota Gearhart’s photographic sculpture speaks to pictures that will never be taken and sights that will never be seen, especially within the new frontier of space photography. Made from collaged images of the cosmos culled from NASA, the photos are then adhered together and painted over with the artist’s interpretation of the Andromeda Galaxy.</p><p>Our scientific images of the cosmos are more or less fake photographs – intensively color corrected, cropped, translated, compressed, and composited by a team of artists and scientists at NASA. This done so that we can interpret information which otherwise would appear blurry, blown out, and static-like to the cones and rods of our human eyes.</p><p>In this way, the NASA mission of photographing the cosmos becomes an expression of aesthetic power, not unlike the practices of early landscape photographers in the late nineteenth century. In both cases, when a select group of people create photographs that the public interprets as “real” or “fact” it opens up doors for the misunderstanding of peoples, lands, practices, and now, the vast beyond. These slippery patterns in image-making are concerning, as they speak to a history of commodifying the foreign through the truth-like quality of a photograph.</p><p>Seeking to reconstruct a version of the Andromeda Galaxy, the artist challenges what we assume about the unknown dimensions of outer space as we look at stock images of the cosmos, as well as a way to imagine what is unknowable and un-photographable.",
-    "bio": "Dakota Gearhart is a multi-media artist working in sculpture, video, light, and installation, questioning systems of human desire and environmental consumption through the lens of fantastical narrative. Dakota has exhibited work both nationally and internationally in venues such as Henry Art Gallery, Seattle; FalseFront Gallery, Portland; Vulpes Vulpes, London; and Taiyuan Normal University Gallery, Shanxi. She is the recipient of the Artist Trust Project Grant, the Jane & David Davis Fellowship, and the Cultural Ambassador Scholarship from the Spanish Ministry of Education. Dakota lives and works in Seattle, WA, where she recently graduated with her MFA from the University of Washington.",
-    "latitude": "47.62443199556771",
-    "longitude": "-122.33731269836424"
-  },
-  {
-    "street": "Republican St, west of Boren Ave N",
-    "artist": "Rickie Wolfe",
-    "title": "Under the Big Tent",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/wolfe31lanternsdet3-copy.jpg?w=488&h=650",
-    "url": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-    "statement": "Rickie Wolfe’s multi media work is rooted in an interest in process and the investigation of structure. After forging circles and curvilinear pieces of metal, she looks for compositional interest, line width, and a certain emotional response. The metal skeleton is fully realized when I recognize a balance between buoyancy and weight. For me, the beauty of the shadows is always striking, important, and enjoyable when lighting a show. Taking the step to capture the shadows on paper has been an important shift in my art practice. My Storefront has come at this exciting crossroads as I continue to explore the relationship between my mediums.",
-    "bio": "Rickie Wolfe lives, works, and teaches in Seattle Washington where she has a studio practice in printmaking, sculpture, and painting. She is represented by Fresh Paint Art in Los Angeles, California and Gallery IMA in Seattle where she will have a solo exhibition in October of this year. Wolfe received her BFA from Cornish College of the Arts.",
-    "latitude": "47.623144843796936",
-    "longitude": "-122.33645439147949"
-  },
-  {
-    "street": "Harrison St, west of Boren Ave N",
-    "artist": "Aitana de la Jara",
-    "title": "The 99 Critical Shots in Pool",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/04-de-la-jara.jpg?w=341&h=650",
-    "url": "http://www.aitanadelajara.com/",
-    "statement": "The paintings and drawings of The 99 Critical Shots in Pool take as a starting point the marks that pool players make on the pool cloth during practice to recreate over and over again the same ball configuration to perfect a shot. These traces create a record of a struggle that the player has with himself, which are parallel to the way the marks on canvas or paper create a record of how an artist struggles with the materials and ideas of art. In essence, what happens on the pool cloth, and the marks left on it, have become for me a metaphor for a private struggle to break through one’s own personal limitations. The pool cloths in this series depict a struggle between reality and potential.</p><p>This work would not have been possible without the generosity of Rich Geiler, a top pool player in the Pacific Northwest, who provided the used pool cloths.",
-    "bio": "Born in Alicante, Spain, Aitana de la Jara moved to the San Francisco Bay area as a child, studied painting at Yale, and later received an MFA in painting from the University of Washington. After spending a few years of intense painting and isolation in Southern Utah and Italy, thanks to a Fulbright grant, the artist now resides in Seattle.",
-    "latitude": "47.621958900629956",
-    "longitude": "-122.33636856079102"
-  },
-  {
-    "street": "Harrison St, west of Boren Ave N",
-    "artist": "k burnley",
-    "title": "Elusive/Illusive",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/rooms-orange.jpg?w=650&h=366",
-    "url": "http://www.kburnley.com/",
-    "statement": "<i>Illusive/Elusive</i> is an installation exploring the fruitless ways we try to frame the past and our relationship with it. Memories naturally distance themselves from us with time: whether they make room for new ones or we merely just get older and start to forget. Some research states that we truly never forget anything, it is always stored away somewhere in our brains and it’s just the process of accessing it that proves to be the problem.</p><p><i>Illusive/Elusive</i> creates a neuron-like web to represent memories and thoughts that overlap to create a complete idea. By adding a “frame” to the installation – one that can only be assumed and never truly seen as whole – the installation becomes a “false” representation of what is there. Elusive is what’s always on the horizon. Elusive is the dream where you never catch the flight. The idea of “illusive” is negative. It’s trickery and deception. It plays on what one thinks is reality. Memories exists as both elusive and illusive.",
-    "bio": "k burnley is an artist who lives and works in Seattle, WA. Both her photographic and installation work addresses where memory and reality meet and where they diverge – often in a muted color palette. Her work has been featured in exhibitions in Brooklyn and Seattle. She earned her BFA in photography from the Maryland Institute College of Art in 2007.",
-    "latitude": "47.62192997485076",
-    "longitude": "-122.3360252380371"
-  },
-  {
-    "street": "Thomas St, west of Boren Ave N",
-    "artist": "Katherine Noel",
-    "title": "Fairy Tale Book Sculptures",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/noel-unnamed.jpg?w=650&h=487",
-    "url": "http://cargocollective.com/katherinechristmas",
-    "statement": "Katherine Noel’s work offers tangible, three-dimensional illustrations of classic fairy tales. The images are ones we all know, but don’t often see off the page itself. Through a combination of book art and sculpture, these dioramas take the notion of a pop-up book one step further. The delicately detailed representations carry a weight and movement that brings the stories of childhood beyond the book’s binding.",
-    "bio": "Noel studied visual art and English at Duke University with a strong interest in sculpture and photography. She now lives in Seattle and designs and installs window displays downtown.",
-    "latitude": "47.62097541515849",
-    "longitude": "-122.33654022216795"
-  },
-  {
-    "street": "Thomas St, west of Boren Ave N",
-    "artist": "Ellen DiCola",
-    "title": "Was Here",
-    "image": "https://storefrontsseattle.files.wordpress.com/2015/03/best_smoke-farm_day.jpg?w=650&h=488",
-    "url": "http://storefrontsseattle.com/2015/03/19/eight-new-storefronts-for-spring-in-south-lake-union/",
-    "statement": "Ellie DiCola works from the perspective of the unapologetically female, using video, performance, online media, sculpture and experimental poetics. Utilizing highly autobiographical content and overtly feminine tropes, she speaks to broader questions about gender, identity and feminism. Performing secular ritual such as tending to houseplants, preparing/consuming food, and maintaining a diary through video blogging, is a way to explore the overlap of desire and futility, the pull between embodiment and disembodiment. The artist draws from symbolism related to mystic traditions, such as spell-casting, as well as the Catholic trinity and sacrament, to explore the nature of belief and representation. DiCola creates work that aesthetically hovers between sensuous tactility and a broader digital/virtual lens, through which it’s ultimately presented.",
-    "bio": "Ellie Dicola is an interdisciplinary artist and writer based in Seattle. Ellie received an MFA in studio art from the San Francisco Art Institute. Her work has recently been presented at On The Ground Floor (Los Angeles),Seattle University’s Hedreen Gallery, the Henry Art Gallery Test Site, with Present Company in Brooklyn, and in a variety of alternative formats and venues on the west coast. She is a Contributing Writer for Art Nerd City Guides: Art Nerd Seattle.",
-    "latitude": "47.62101880461351",
-    "longitude": "-122.3362612724304"
-  }
-]
-},{}],4:[function(require,module,exports){
-
-},{}],5:[function(require,module,exports){
 
 var synth = require('synthetic-dom-events');
 
@@ -251,7 +171,7 @@ module.exports = {
     emit: emit
 };
 
-},{"synthetic-dom-events":6}],6:[function(require,module,exports){
+},{"synthetic-dom-events":4}],4:[function(require,module,exports){
 
 // for compression
 var win = window;
@@ -372,7 +292,7 @@ var typeOf = (function () {
     };
 })();
 
-},{"./init.json":7,"./types.json":8}],7:[function(require,module,exports){
+},{"./init.json":5,"./types.json":6}],5:[function(require,module,exports){
 module.exports={
   "initEvent" : [
     "type",
@@ -439,7 +359,7 @@ module.exports={
   ]
 }
 
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports={
   "MouseEvent" : [
     "click",
@@ -484,7 +404,54 @@ module.exports={
   ]
 }
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+module.exports = function(opts) {
+  return new ElementClass(opts)
+}
+
+function ElementClass(opts) {
+  if (!(this instanceof ElementClass)) return new ElementClass(opts)
+  var self = this
+  if (!opts) opts = {}
+
+  // similar doing instanceof HTMLElement but works in IE8
+  if (opts.nodeType) opts = {el: opts}
+
+  this.opts = opts
+  this.el = opts.el || document.body
+  if (typeof this.el !== 'object') this.el = document.querySelector(this.el)
+}
+
+ElementClass.prototype.add = function(className) {
+  var el = this.el
+  if (!el) return
+  if (el.className === "") return el.className = className
+  var classes = el.className.split(' ')
+  if (classes.indexOf(className) > -1) return classes
+  classes.push(className)
+  el.className = classes.join(' ')
+  return classes
+}
+
+ElementClass.prototype.remove = function(className) {
+  var el = this.el
+  if (!el) return
+  if (el.className === "") return
+  var classes = el.className.split(' ')
+  var idx = classes.indexOf(className)
+  if (idx > -1) classes.splice(idx, 1)
+  el.className = classes.join(' ')
+  return classes
+}
+
+ElementClass.prototype.has = function(className) {
+  var el = this.el
+  if (!el) return
+  var classes = el.className.split(' ')
+  return classes.indexOf(className) > -1
+}
+
+},{}],8:[function(require,module,exports){
 ;(function () {
 	'use strict';
 
@@ -1327,7 +1294,7 @@ module.exports={
 	}
 }());
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -1365,7 +1332,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":11,"./handlebars/compiler/ast":13,"./handlebars/compiler/base":14,"./handlebars/compiler/compiler":15,"./handlebars/compiler/javascript-compiler":16}],11:[function(require,module,exports){
+},{"./handlebars.runtime":10,"./handlebars/compiler/ast":12,"./handlebars/compiler/base":13,"./handlebars/compiler/compiler":14,"./handlebars/compiler/javascript-compiler":15}],10:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -1398,7 +1365,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":12,"./handlebars/exception":20,"./handlebars/runtime":21,"./handlebars/safe-string":22,"./handlebars/utils":23}],12:[function(require,module,exports){
+},{"./handlebars/base":11,"./handlebars/exception":19,"./handlebars/runtime":20,"./handlebars/safe-string":21,"./handlebars/utils":22}],11:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -1579,7 +1546,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":20,"./utils":23}],13:[function(require,module,exports){
+},{"./exception":19,"./utils":22}],12:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -1807,7 +1774,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":20}],14:[function(require,module,exports){
+},{"../exception":19}],13:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -1823,7 +1790,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":13,"./parser":17}],15:[function(require,module,exports){
+},{"./ast":12,"./parser":16}],14:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -2293,7 +2260,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":20}],16:[function(require,module,exports){
+},{"../exception":19}],15:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -3236,7 +3203,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":12,"../exception":20}],17:[function(require,module,exports){
+},{"../base":11,"../exception":19}],16:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -3727,7 +3694,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -3866,7 +3833,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":19}],19:[function(require,module,exports){
+},{"./visitor":18}],18:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -3879,7 +3846,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -3908,7 +3875,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -4046,7 +4013,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":12,"./exception":20,"./utils":23}],22:[function(require,module,exports){
+},{"./base":11,"./exception":19,"./utils":22}],21:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -4058,7 +4025,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -4135,7 +4102,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":22}],24:[function(require,module,exports){
+},{"./safe-string":21}],23:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -4162,4 +4129,342 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":10,"../dist/cjs/handlebars/compiler/printer":18,"../dist/cjs/handlebars/compiler/visitor":19,"fs":4}]},{},[1])
+},{"../dist/cjs/handlebars":9,"../dist/cjs/handlebars/compiler/printer":17,"../dist/cjs/handlebars/compiler/visitor":18,"fs":2}],24:[function(require,module,exports){
+"use strict";
+var window = require("global/window")
+var once = require("once")
+var parseHeaders = require("parse-headers")
+
+
+
+module.exports = createXHR
+createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
+createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
+
+
+function isEmpty(obj){
+    for(var i in obj){
+        if(obj.hasOwnProperty(i)) return false
+    }
+    return true
+}
+
+function createXHR(options, callback) {
+    function readystatechange() {
+        if (xhr.readyState === 4) {
+            loadFunc()
+        }
+    }
+
+    function getBody() {
+        // Chrome with requestType=blob throws errors arround when even testing access to responseText
+        var body = undefined
+
+        if (xhr.response) {
+            body = xhr.response
+        } else if (xhr.responseType === "text" || !xhr.responseType) {
+            body = xhr.responseText || xhr.responseXML
+        }
+
+        if (isJson) {
+            try {
+                body = JSON.parse(body)
+            } catch (e) {}
+        }
+
+        return body
+    }
+
+    var failureResponse = {
+                body: undefined,
+                headers: {},
+                statusCode: 0,
+                method: method,
+                url: uri,
+                rawRequest: xhr
+            }
+
+    function errorFunc(evt) {
+        clearTimeout(timeoutTimer)
+        if(!(evt instanceof Error)){
+            evt = new Error("" + (evt || "Unknown XMLHttpRequest Error") )
+        }
+        evt.statusCode = 0
+        callback(evt, failureResponse)
+    }
+
+    // will load the data & process the response in a special response object
+    function loadFunc() {
+        if (aborted) return
+        var status
+        clearTimeout(timeoutTimer)
+        if(options.useXDR && xhr.status===undefined) {
+            //IE8 CORS GET successful response doesn't have a status field, but body is fine
+            status = 200
+        } else {
+            status = (xhr.status === 1223 ? 204 : xhr.status)
+        }
+        var response = failureResponse
+        var err = null
+
+        if (status !== 0){
+            response = {
+                body: getBody(),
+                statusCode: status,
+                method: method,
+                headers: {},
+                url: uri,
+                rawRequest: xhr
+            }
+            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+                response.headers = parseHeaders(xhr.getAllResponseHeaders())
+            }
+        } else {
+            err = new Error("Internal XMLHttpRequest Error")
+        }
+        callback(err, response, response.body)
+
+    }
+
+    if (typeof options === "string") {
+        options = { uri: options }
+    }
+
+    options = options || {}
+    if(typeof callback === "undefined"){
+        throw new Error("callback argument missing")
+    }
+    callback = once(callback)
+
+    var xhr = options.xhr || null
+
+    if (!xhr) {
+        if (options.cors || options.useXDR) {
+            xhr = new createXHR.XDomainRequest()
+        }else{
+            xhr = new createXHR.XMLHttpRequest()
+        }
+    }
+
+    var key
+    var aborted
+    var uri = xhr.url = options.uri || options.url
+    var method = xhr.method = options.method || "GET"
+    var body = options.body || options.data
+    var headers = xhr.headers = options.headers || {}
+    var sync = !!options.sync
+    var isJson = false
+    var timeoutTimer
+
+    if ("json" in options) {
+        isJson = true
+        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
+        if (method !== "GET" && method !== "HEAD") {
+            headers["content-type"] || headers["Content-Type"] || (headers["Content-Type"] = "application/json") //Don't override existing accept header declared by user
+            body = JSON.stringify(options.json)
+        }
+    }
+
+    xhr.onreadystatechange = readystatechange
+    xhr.onload = loadFunc
+    xhr.onerror = errorFunc
+    // IE9 must have onprogress be set to a unique function.
+    xhr.onprogress = function () {
+        // IE must die
+    }
+    xhr.ontimeout = errorFunc
+    xhr.open(method, uri, !sync, options.username, options.password)
+    //has to be after open
+    if(!sync) {
+        xhr.withCredentials = !!options.withCredentials
+    }
+    // Cannot set timeout with sync request
+    // not setting timeout on the xhr object, because of old webkits etc. not handling that correctly
+    // both npm's request and jquery 1.x use this kind of timeout, so this is being consistent
+    if (!sync && options.timeout > 0 ) {
+        timeoutTimer = setTimeout(function(){
+            aborted=true//IE9 may still call readystatechange
+            xhr.abort("timeout")
+            var e = new Error("XMLHttpRequest timeout")
+            e.code = "ETIMEDOUT"
+            errorFunc(e)
+        }, options.timeout )
+    }
+
+    if (xhr.setRequestHeader) {
+        for(key in headers){
+            if(headers.hasOwnProperty(key)){
+                xhr.setRequestHeader(key, headers[key])
+            }
+        }
+    } else if (options.headers && !isEmpty(options.headers)) {
+        throw new Error("Headers cannot be set on an XDomainRequest object")
+    }
+
+    if ("responseType" in options) {
+        xhr.responseType = options.responseType
+    }
+
+    if ("beforeSend" in options &&
+        typeof options.beforeSend === "function"
+    ) {
+        options.beforeSend(xhr)
+    }
+
+    xhr.send(body)
+
+    return xhr
+
+
+}
+
+function noop() {}
+
+},{"global/window":25,"once":26,"parse-headers":30}],25:[function(require,module,exports){
+(function (global){
+if (typeof window !== "undefined") {
+    module.exports = window;
+} else if (typeof global !== "undefined") {
+    module.exports = global;
+} else if (typeof self !== "undefined"){
+    module.exports = self;
+} else {
+    module.exports = {};
+}
+
+}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],26:[function(require,module,exports){
+module.exports = once
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var called = false
+  return function () {
+    if (called) return
+    called = true
+    return fn.apply(this, arguments)
+  }
+}
+
+},{}],27:[function(require,module,exports){
+var isFunction = require('is-function')
+
+module.exports = forEach
+
+var toString = Object.prototype.toString
+var hasOwnProperty = Object.prototype.hasOwnProperty
+
+function forEach(list, iterator, context) {
+    if (!isFunction(iterator)) {
+        throw new TypeError('iterator must be a function')
+    }
+
+    if (arguments.length < 3) {
+        context = this
+    }
+    
+    if (toString.call(list) === '[object Array]')
+        forEachArray(list, iterator, context)
+    else if (typeof list === 'string')
+        forEachString(list, iterator, context)
+    else
+        forEachObject(list, iterator, context)
+}
+
+function forEachArray(array, iterator, context) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            iterator.call(context, array[i], i, array)
+        }
+    }
+}
+
+function forEachString(string, iterator, context) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        iterator.call(context, string.charAt(i), i, string)
+    }
+}
+
+function forEachObject(object, iterator, context) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            iterator.call(context, object[k], k, object)
+        }
+    }
+}
+
+},{"is-function":28}],28:[function(require,module,exports){
+module.exports = isFunction
+
+var toString = Object.prototype.toString
+
+function isFunction (fn) {
+  var string = toString.call(fn)
+  return string === '[object Function]' ||
+    (typeof fn === 'function' && string !== '[object RegExp]') ||
+    (typeof window !== 'undefined' &&
+     // IE8 and below
+     (fn === window.setTimeout ||
+      fn === window.alert ||
+      fn === window.confirm ||
+      fn === window.prompt))
+};
+
+},{}],29:[function(require,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
+}
+
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
+};
+
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
+
+},{}],30:[function(require,module,exports){
+var trim = require('trim')
+  , forEach = require('for-each')
+  , isArray = function(arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]';
+    }
+
+module.exports = function (headers) {
+  if (!headers)
+    return {}
+
+  var result = {}
+
+  forEach(
+      trim(headers).split('\n')
+    , function (row) {
+        var index = row.indexOf(':')
+          , key = trim(row.slice(0, index)).toLowerCase()
+          , value = trim(row.slice(index + 1))
+
+        if (typeof(result[key]) === 'undefined') {
+          result[key] = value
+        } else if (isArray(result[key])) {
+          result[key].push(value)
+        } else {
+          result[key] = [ result[key], value ]
+        }
+      }
+  )
+
+  return result
+}
+},{"for-each":27,"trim":29}]},{},[1])
