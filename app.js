@@ -3,6 +3,7 @@ var fs = require('fs')
 var Handlebars = require('handlebars')
 var elClass = require('element-class')
 var eve = require('dom-events')
+var request = require('xhr')
 require('fastclick')(document.body)
 
 L.mapbox.accessToken = 'pk.eyJ1Ijoic2V0aHZpbmNlbnQiLCJhIjoiSXZZXzZnUSJ9.Nr_zKa-4Ztcmc1Ypl0k5nw'
@@ -24,18 +25,21 @@ var templates = {
   shunpike: fs.readFileSync('templates/shunpike.html')
 }
 
-var infodata = require('./info.json')[0]
-infoBoxEl.innerHTML = templates.info(infodata)
+request('/info.json', function (err, res, body) {
+  infoBoxEl.innerHTML = templates.info(JSON.parse(body)[0])
+})
 
 var map = window.map = L.map(mapEl)
 map.addLayer(mapboxTiles)
 map.setView([47.6224, -122.337], 16)
 if (window.innerWidth >= 700) resizeMap()
 
-var locations = require('./locations.json')
-var geojson = createGeoJSON(locations)
 var markerLayer = L.mapbox.featureLayer().addTo(map)
-markerLayer.setGeoJSON(geojson)
+
+request('/locations.json', function (err, res, body) {
+  var geojson = createGeoJSON(JSON.parse(body))
+  markerLayer.setGeoJSON(geojson)
+})
 
 markerLayer.on('click', function (e) {
   var item = e.layer.feature.properties
