@@ -1,10 +1,12 @@
 <h2 style="font-size:18px;">{{ date }}</h2>
 <p>{{description}}</p>
 <p><a href="{{link}}" target="_blank">Learn more about the artists</a></p>
-<hr>
-<h2 style="font-size:18px;">Art Walk: {{artwalk}}</h2>
-<p><a href="https://www.google.com/maps?f=q&source=s_q&hl=en&geocode&q=535+Terry+Avenue+Seattle+WA+98109+United+States" target="_blank">Corner of Mercer and Terry Streets, 535 Terry Avenue, Seattle, WA – <b>Directions</b></a></p>
-<p>{{artwalk_description}}</p>
-<p><b>South Lake Union:</b>  Mercer, Republican, Harrison, Thomas, and John Streets, between Boren and Westlake</p>
-<br>
+{{#if show_art_walk}}
+  <hr>
+  <h2 style="font-size:18px;">Art Walk: {{artwalk}}</h2>
+  <p><a href="https://www.google.com/maps?f=q&source=s_q&hl=en&geocode&q=535+Terry+Avenue+Seattle+WA+98109+United+States" target="_blank">Corner of Mercer and Terry Streets, 535 Terry Avenue, Seattle, WA – <b>Directions</b></a></p>
+  <p>{{artwalk_description}}</p>
+  <p><b>South Lake Union:</b>  Mercer, Republican, Harrison, Thomas, and John Streets, between Boren and Westlake</p>
+  <br>
+{{/if}}
 <p style="font-size:80%;">Made in partnership with <a href="http://openseattle.org" target="_blank">Open Seattle</a>.</p>
