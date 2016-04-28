@@ -3,7 +3,8 @@
     "link": "http://storefrontsseattle.com/2015/12/03/eight-new-artists-on-display-in-south-lake-union/",
     "date": "April 1 – July 10, 2016",
     "description": "Shunpike is proud to present the work of eight  Washington State artists in South Lake Union as part of its acclaimed Storefronts program. Exploring subjects such as the stormy vortexes in life, kinetic wonder, memory, and scale. These works are now on display until July 10, 2016.",
-    "artwalk": "(Details Coming Soon)",
+    "show_art_walk": false,
+    "artwalk": "",
     "artwalk_description": ""
   }
 ]
